@@ -1,284 +1,277 @@
-/* Box Model Reset */
+/* styles.css */
+@import url("https://fonts.googleapis.com/css2?family=Inter&family=Literata:opsz@7..72&display=swap");
+
+/******* Change Box Model ***************/
 *,
-*::before,
-*::after {
+*:before,
+*:after {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
 }
 
-/* Prevent horizontal scroll */
-html,
+:root {
+  --primary-background: #fff;
+  --main-accent: #01b0d3;
+  --body-font: Inter;
+  --primary-text: #242333; /* Added for header.ejs */
+  --heading-font: Literata; /* Added for main content area (index.ejs) */
+}
+
 body {
-  max-width: 100%;
-  overflow-x: hidden;
-}
-
-/* Body and Base Font */
-body {
-  font-family: Arial, Helvetica, sans-serif;
-  background-color: #f5f5f5;
-  color: #333;
-  line-height: 1.6;
-}
-
-/* Wrapper if needed */
-.wrapper {
+  font-family: var(--body-font), sans-serif;
   margin: 0;
-  padding: 0;
-  width: 100%;
-  max-width: 100%;
-  overflow-x: hidden;
 }
 
-/* Header */
+#wrapper {
+  width: 95%;
+  background-color: var(--primary-background);
+  margin-left: auto;
+  margin-right: auto;
+  padding-bottom: 1em;
+}
+
+/* BEGIN header.ejs styles */
 #top-header {
-  background-color: #003366;
-  color: #fff;
-  padding: 1rem 2rem;
   display: flex;
   justify-content: space-between;
-  align-items: center;
 }
 
-#top-header a {
-  color: #fff;
+.siteName {
+  font-size: 2rem;
+  font-weight: 800;
+}
+
+#tools {
+  font-size: 3.5vw;
+  font-variant: small-caps;
+  display: flex;
+  width: 20%;
+  justify-content: space-evenly;
+}
+
+header > img {
+  max-width: 40%;
+}
+
+header a {
   text-decoration: none;
-  font-weight: bold;
+  color: var(--primary-text);
+  display: inline-block;
+  padding: 2vh 0;
+}
+/* END header.ejs styles */
+
+/* BEGIN navigation.ejs style */
+nav {
+  background-color: var(--primary-text);
+  color: var(--primary-background);
 }
 
-#top-header a:hover {
-  text-decoration: underline;
-}
-
-/* Navigation */
 nav ul {
   display: flex;
+  padding: 0 1vw;
   justify-content: space-around;
+}
+
+nav li {
   list-style: none;
-  background-color: #004080;
-  padding: 0.75rem 0;
-  font-weight: 600;
+  padding-top: 1em;
+  padding-bottom: 1em;
 }
+/* END navigation.ejs style */
 
-nav ul li {
-  margin: 0 1.25rem;
-}
-
-nav ul li a {
-  color: #fff;
-  text-decoration: none;
-}
-
-nav ul li a:hover {
-  text-decoration: underline;
-}
-
-/* Hero Section */
-.hero {
-  position: relative;
-  display: flex;
-  align-items: center;
-  padding: 2rem;
-  min-height: 400px;
-  overflow: hidden;
-}
-
-.hero-img {
-  position: absolute;
-  top: 50%;
-  left: 12rem;
-  /* Move image to the left edge (adjust 2rem as needed) */
-  transform: translateY(-50%);
-  width: auto;
-  height: 80%;
-  object-fit: contain;
-  z-index: 1;
-  user-select: none;
-}
-
-.hero-content {
-  position: relative;
-  /* To stack above image */
-  z-index: 2;
-  max-width: 450px;
-  background-color: rgba(0, 0, 0, 0.72);
-  padding: 2rem;
-  border-radius: 8px;
-  color: #fff;
-}
-
-h1 {
-  font-size: 1.8rem;
-  margin: 1rem auto 1rem 1rem;
-}
-
-.hero-content h2 {
-  font-size: 2rem;
-  margin-bottom: 1rem;
-  font-weight: normal;
-}
-
-.hero-content p {
-  font-size: 1.1rem;
-  margin-bottom: 0.6rem;
-}
-
-.hero-content button {
-  background-color: #004080;
-  color: #fff;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-top: 1rem;
-  transition: background-color 0.3s ease;
-}
-
-.hero-content button:hover {
-  background-color: #e65500;
-}
-
-/* Main Sections Container */
-.main-sections {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  padding: 2rem;
-  width: 100%;
-  max-width: 100%;
-  overflow-x: hidden;
-}
-
-/* Right Section above Left Section on mobile */
-.right-section {
-  order: -1;
-  flex: 1;
-}
-
-.right-section h2 {
-  color: #003366;
-  margin-bottom: 1rem;
-}
-
-.right-section ul {
-  list-style: disc inside;
-  color: #333;
-  font-size: 2rem;
-  line-height: 1.4;
-}
-
-/* Left Section */
-.left-section {
-  flex: 1;
-}
-
-.left-section h2 {
-  color: #003366;
-  margin-bottom: 1rem;
-}
-
-/* Upgrades Grid */
-.upgrades-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-}
-
-.upgrades-grid figure {
-  text-align: center;
-  background-color: #fff;
-  padding: 0.5rem;
-  border-radius: 8px;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
-}
-
-.upgrades-grid img {
-  width: 100%;
-  max-width: 70px;
-  height: auto;
-  border-radius: 6px;
-}
-
-.upgrades-grid figcaption {
-  margin-top: 0.5rem;
-  font-weight: 600;
-  color: #003366;
-}
-
-/* Footer */
+/* BEGIN footer.ejs style */
 footer {
-  padding: 1rem 1rem;
-  margin-left: 0;
-  margin-right: 0;
-  background-color: #003366;
-  color: #fff;
+  margin-top: 2rem;
+}
+
+footer p {
+  margin: 0;
+  padding: 0;
   font-size: 0.9rem;
-  width: 100%;
+}
+
+hr {
+  border: 2px solid var(--primary-text);
+  margin: 0;
+}
+/* END footer.ejs style */
+
+/* BEGIN index.ejs styles */
+img {
   max-width: 100%;
-  overflow-x: hidden;
 }
 
-/* Responsive Styles */
-@media (min-width: 768px) {
-  .main-sections {
-    flex-direction: row;
-    gap: 3rem;
-    padding: 3rem 2rem;
-  }
-
-  .right-section {
-    order: 0;
-  }
+h1,
+h2 {
+  font-size: 1.2em;
+  font-family: var(--heading-font), serif;
 }
 
-@media (min-width: 1024px) {
-  .hero-content h1 {
-    font-size: 3.5rem;
-  }
-
-  .hero-content h2 {
-    font-size: 2.5rem;
-  }
-
-  .hero {
-    min-height: 400px;
-  }
+#hero {
+  background-image: url("/images/vehicles/delorean.jpg");
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
 }
 
-/* Reduce horizontal padding on smaller screens and remove vertical spacing */
-@media (max-width: 767px) {
+#hero h2 {
+  margin-left: 0;
+}
 
-  .hero,
-  .main-sections {
-    padding-left: 1rem;
-    padding-right: 1rem;
+#hero a:hover {
+  opacity: 0.5;
+}
+
+#hero li {
+  list-style: none;
+  color: var(--main-accent);
+}
+
+#hero li h2 {
+  margin-top: 0;
+  margin-bottom: 0;
+  color: var(--main-accent);
+}
+
+#hero ul {
+  padding-left: 0;
+  margin-top: 0;
+  max-width: 200px;
+  margin-left: 0.5em;
+  margin-bottom: 2rem;
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+#hero li {
+  font-size: 0.85em;
+}
+
+#actionbtn {
+  display: inline-block;
+  max-width: 25vw;
+  max-height: 10vh;
+  padding: 0.5rem;
+  background-color: var(--main-accent);
+  color: var(--primary-text);
+  font-weight: 800;
+  border-radius: 0.25rem;
+}
+
+#actionbtn:hover {
+  opacity: 0.5;
+}
+
+/* For Delorian list */
+section ul {
+  padding: 0 0 0 1rem;
+}
+
+#review li {
+  font-size: 0.9em;
+  margin-bottom: 1em;
+}
+
+.flex {
+  display: flex;
+  margin-bottom: 2em;
+  justify-content: center;
+  width: 100%;
+  padding-left: 0.25em;
+}
+
+.flex a {
+  width: 100%;
+}
+
+.add-col {
+  background-color: var(--main-accent);
+  height: 5.5em;
+  width: 95%;
+  border: var(--primary-text) solid 1px;
+}
+
+a figure {
+  margin: 0;
+}
+
+figure img {
+  display: block;
+  margin: auto;
+  padding-top: 0.5em;
+}
+
+figure figcaption {
+  text-align: center;
+}
+
+section {
+  margin-bottom: 2em;
+  margin-top: 1em;
+}
+/* END index.ejs styles */
+
+@media only screen and (min-width: 768px) {
+  body {
+    background-image: linear-gradient(45deg, #000 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #000 75%),
+    linear-gradient(45deg, transparent 75%, #000 75%),
+    linear-gradient(45deg, #000 25%, #fff 25%);
+    background-size: 100px 100px;
+    background-position: 0 0, 0 0, -50px -50px, 50px 50px;
   }
 
-  .hero {
-    padding-top: 0.5rem;
-    /* reduced top padding */
-    padding-bottom: 0.5rem;
-    /* reduced bottom padding */
-    min-height: auto;
-    /* remove forced min-height */
+  #wrapper {
+    border: 5px solid var(--main-accent);
+    border-radius: 10px;
+    margin-top: 1rem;
+    padding: 1vw;
+    width: 75vw;
+    max-width: 1200px;
   }
 
-  .hero-content {
-    padding: 1.25rem;
-    max-width: 90%;
-    font-size: 0.9rem;
+  /* BEGIN header.ejs styles */
+  #tools {
+    font-size: inherit;
+  }
+  /* END header.ejs styles */
+
+  /* BEGIN navigation.ejs styles */
+  nav {
+    margin-top: 0.75rem;
   }
 
-  .right-section ul {
-    font-size: 1rem;
+  nav ul {
+    justify-content: space-evenly;
+    padding: 0.5rem 0;
+    margin: 0;
   }
 
-  .hero-img {
-    left: 2rem;
-    /* less left spacing */
-    height: 50%;
+  nav li {
+    margin: 0;
+    padding: 0;
+    text-align: center;
+  }
+  /* END navigation.ejs styles */
+
+  /* BEGIN index.ejs styles */
+  #hero ul {
+    font-size: 1.6em;
+    margin-left: 2em;
+    margin-top: 1em;
   }
 
+  #actionbtn {
+    display: block;
+    width: 90%;
+    margin-top: 1.5em;
+    padding: 1rem;
+    background-color: var(--main-accent);
+    color: var(--primary-text);
+    font-weight: 800;
+    font-size: large;
+  }
+  /* END index.ejs styles */
 }
