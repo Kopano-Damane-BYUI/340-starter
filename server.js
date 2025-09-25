@@ -2,6 +2,7 @@
  * This server.js file is the primary file of the
  * application. It is used to control the project.
  *******************************************/
+
 /* ***********************
  * Require Statements
  *************************/
@@ -11,7 +12,7 @@ const app = express();
 const static = require("./routes/static");
 const expressLayouts = require("express-ejs-layouts");
 const baseController = require("./controllers/baseController");
-const inventoryRoute = require("./routes/inventoryRoute");
+const inventoryRoute = require("./routes/inventoryRoute"); // corrected
 const utilities = require("./utilities/");
 
 /* ***********************
@@ -28,8 +29,10 @@ app.use(static);
 
 // Index route
 app.get("/", utilities.handleErrors(baseController.buildHome))
+
 // Inventory routes
 app.use("/inv", inventoryRoute)
+
 // File Not Found Route - must be last route in list
 app.use(async (req, res, next) => {
   next({status: 404, message: 'Sorry, we appear to have lost that page.'})
@@ -41,8 +44,13 @@ app.use(async (req, res, next) => {
 *************************/
 app.use(async (err, req, res, next) => {
   let nav = await utilities.getNav()
+  let message
+  if(err.status == 404){ 
+    message = err.message
+  } else {
+    message = 'Oh no! There was a crash. Maybe try a different route?'
+  }
   console.error(`Error at: "${req.originalUrl}": ${err.message}`)
-  if(err.status == 404){ message = err.message} else {message = 'Oh no! There was a crash. Maybe try a different route?'}
   res.render("errors/error", {
     title: err.status || 'Server Error',
     message,
