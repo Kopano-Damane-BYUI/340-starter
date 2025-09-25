@@ -128,9 +128,11 @@ nav a:hover {
 /* Inventory display as cards (responsive) */
 #inv-display {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(250px, 300px));
+  /* each card will be between 250px and 300px */
+  justify-content: center;
+  /* centers the whole grid in the parent */
   gap: 1rem;
-  /* spacing between cards */
   padding: 0;
   list-style: none;
 }
