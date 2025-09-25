@@ -75,7 +75,7 @@ function buildVehicleDetailHTML(vehicle) {
       </div>
       <div class="vehicle-info">
         <h2 class="vehicle-heading">${vehicle.inv_make} ${vehicle.inv_model} Details</h2>
-        <p class="vehicle-price"><strong>Price:</strong> $${vehicle.inv_price.toLocaleString()}</p>
+        <p class="vehicle-price"><strong>Price:</strong> ${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(vehicle.inv_price)}</p>
         <p class="vehicle-description"><strong>Description:</strong> ${vehicle.inv_description}</p>
         <p class="vehicle-color"><strong>Color:</strong> ${vehicle.inv_color}</p>
         <p class="vehicle-meta"><strong>Mileage:</strong> ${vehicle.inv_miles.toLocaleString()} miles</p>
