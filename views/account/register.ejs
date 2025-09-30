@@ -1,0 +1,93 @@
+<!-- Heading stands alone -->
+<h1>
+  <%= title %>
+</h1>
+
+<% if (errors && errors.length> 0) { %>
+  <ul class="notice">
+    <% errors.forEach(error=> { %>
+      <li>
+        <%= error.msg %>
+      </li>
+      <% }) %>
+  </ul>
+  <% } %>
+
+<!-- Registration card -->
+<div class="register-card">
+  <h2>All the fields are required</h2>
+
+  <!-- Password mismatch / invalid message -->
+  <div id="password-error" class="flash-message error" style="display:none;"></div>
+
+  <!-- Add this to the form element for extra client side validation ( onsubmit="return checkPasswords()" )-->
+  <form method="post" action="/account/register" class="register-form">
+    <label for="account_firstname">First Name:</label>
+    <input type="text" id="account_firstname" name="account_firstname" required>
+
+    <label for="account_lastname">Last Name:</label>
+    <input type="text" id="account_lastname" name="account_lastname" required>
+
+    <label for="account_email">Email Address:</label>
+    <input type="email" id="account_email" name="account_email" required>
+
+    <label for="account_password">Password:</label>
+    <div class="password-wrapper">
+      <input type="password" id="account_password" name="account_password" required
+        pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{12,}$">
+    </div>
+
+    <label for="account_confirm_password">Repeat Password:</label>
+    <div class="password-wrapper">
+      <input type="password" id="account_confirm_password" name="account_confirm_password" required
+        pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{12,}$">
+    </div>
+
+    <!-- Password note -->
+    <p class="password-note">
+      Password must be minimum of 12 characters and include 1 capital letter, 1 number and 1 special character
+    </p>
+
+    <!-- Toggle passwords -->
+    <button type="button" class="toggle-password" onclick="togglePassword()">Show Passwords</button>
+
+    <div class="form-actions">
+      <button type="submit">Register</button>
+    </div>
+  </form>
+</div>
+
+<!-- Script for show/hide password and confirm -->
+<script>
+  function togglePassword() {
+    const pwd = document.getElementById("account_password");
+    const confirmPwd = document.getElementById("account_confirm_password");
+    const btn = document.querySelector(".toggle-password");
+    const type = pwd.type === "password" ? "text" : "password";
+    pwd.type = type;
+    confirmPwd.type = type;
+    btn.textContent = type === "text" ? "Hide Passwords" : "Show Passwords";
+  }
+
+  function checkPasswords() {
+    const pwd = document.getElementById("account_password").value;
+    const confirmPwd = document.getElementById("account_confirm_password").value;
+    const errorDiv = document.getElementById("password-error");
+
+    // Regex for minimum 12 chars, 1 capital, 1 number, 1 special char
+    const passwordPattern = /^(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{12,}$/;
+
+    if (pwd !== confirmPwd) {
+      errorDiv.textContent = "Passwords do not match!";
+      errorDiv.style.display = "block";
+      return false;
+    } else if (!passwordPattern.test(pwd)) {
+      errorDiv.textContent = "Password must be at least 12 characters, include 1 capital letter, 1 number, and 1 special character.";
+      errorDiv.style.display = "block";
+      return false;
+    } else {
+      errorDiv.style.display = "none";
+      return true;
+    }
+  }
+</script>

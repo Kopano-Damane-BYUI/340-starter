@@ -437,3 +437,287 @@ section {
     margin-top: 0;
   }
 }
+
+/* ---------- Account / Login Page ---------- */
+.account-main {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 1rem;
+  font-family: Arial, sans-serif;
+}
+
+.account-main h1 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+  color: #333;
+}
+
+/* Flash messages */
+.flash-message {
+  padding: 0.75rem 1rem;
+  margin: 1rem 0;
+  border-radius: 5px;
+  font-size: 0.95rem;
+}
+
+.flash-message.error {
+  background: #ffe0e0;
+  color: #b20000;
+  border: 1px solid #b20000;
+}
+
+.flash-message.success {
+  background: #e6ffea;
+  color: #006600;
+  border: 1px solid #009900;
+}
+
+/* Card styling */
+.login-card {
+  background: #05AEE6;
+  border: 2px solid #444;
+  border-radius: 15px;
+  padding: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  margin: 0 4rem;
+}
+
+/* Form styling */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  border: 0.1px solid white;
+  border-radius: 6px;
+  text-align: left;
+  font-size: 1.5rem;
+}
+
+.login-form label {
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+  color: #000;
+  /* black labels */
+}
+
+.login-form input[type="email"],
+.login-form input[type="password"] {
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  font-size: 1rem;
+  width: 100%;
+}
+
+.login-form input:focus {
+  border-color: #0077cc;
+  outline: none;
+  box-shadow: 0 0 4px rgba(0, 119, 204, 0.4);
+}
+
+/* Password wrapper with toggle button */
+.password-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.password-wrapper input {
+  flex: 1;
+}
+
+/* Show password button */
+.toggle-password {
+  background: #000;
+  border: 1px solid #000;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  /* round edges */
+  width: auto;
+  /* fit text only */
+  align-self: flex-start;
+  /* align left */
+  transition: background 0.3s, color 0.3s;
+}
+
+.toggle-password:hover {
+  background: #fff;
+  color: #000;
+}
+
+.password-note {
+  font-size: 1.2rem;
+  font-weight: bold;
+  font-style: italic;
+}
+/* Login button smaller + aligned left */
+.login-form .form-actions {
+  display: flex;
+  justify-content: flex-start;
+  /* align button to left */
+}
+
+.login-form button[type="submit"] {
+  background: #f9f9f9;
+  /* whitish background */
+  color: #000;
+  font-size: 1.50rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  cursor: pointer;
+  width: auto;
+  /* fit to text */
+  transition: background 0.3s, color 0.3s;
+}
+
+.login-form button[type="submit"]:hover {
+  background: #e0e0e0;
+}
+
+/* Register link */
+.register-link {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.95rem;
+  color: #000;
+  font-weight: bold;
+}
+
+.register-link a {
+  color: #000;
+  font-weight: bold;
+}
+
+.register-link a:hover {
+  text-decoration: underline;
+  text-decoration-color: #fff;
+}
+
+/* ---------- Account / Registration Page ---------- */
+.register-card {
+  background: #05AEE6;
+  border: 2px solid #444;
+  border-radius: 15px;
+  padding: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  margin: 0 4rem;
+}
+
+/* Registration card subheading */
+.register-card h2 {
+  text-align: left;
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 1rem;
+  font-weight: bold;
+  font-style: italic;
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  border: 0.1px solid white;
+  border-radius: 6px;
+  text-align: left;
+  font-size: 1.5rem;
+}
+
+.register-form label {
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+  color: #000;
+}
+
+.register-form input[type="text"],
+.register-form input[type="email"],
+.register-form input[type="password"] {
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  font-size: 1rem;
+  width: 100%;
+}
+
+.register-form input:focus {
+  border-color: #0077cc;
+  outline: none;
+  box-shadow: 0 0 4px rgba(0, 119, 204, 0.4);
+}
+
+/* Password wrapper with toggle button */
+.password-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.password-wrapper input {
+  flex: 1;
+}
+
+/* Show password button */
+.toggle-password {
+  background: #000;
+  border: 1px solid #000;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  width: auto;
+  align-self: flex-start;
+  transition: background 0.3s, color 0.3s;
+}
+
+.toggle-password:hover {
+  background: #fff;
+  color: #000;
+}
+
+.password-note {
+  font-size: 1.2rem;
+  font-weight: bold;
+  font-style: italic;
+}
+
+/* Register button smaller + aligned left */
+.register-form .form-actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.register-form button[type="submit"] {
+  background: #f9f9f9;
+  color: #000;
+  font-size: 1.50rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  cursor: pointer;
+  width: auto;
+  transition: background 0.3s, color 0.3s;
+}
+
+.register-form button[type="submit"]:hover {
+  background: #e0e0e0;
+}
+
+/*Login and Register*/
+input:required:invalid,
+input:focus:invalid {
+  border: 2px solid red;
+}
+
+input:required:valid {
+  border: 2px solid green;
+}

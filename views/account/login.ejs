@@ -1,0 +1,58 @@
+<!-- Heading stands alone -->
+<h1><%= title %></h1>
+
+<!-- Flash message area -->
+<% if (messages && messages.length > 0) { %>
+  <div class="flash-message success">
+    <% messages.forEach(function(msg) { %>
+      <p><%= msg %></p>
+    <% }); %>
+  </div>
+<% } %>
+
+
+
+<!-- Logn card -->
+<div class="login-card">
+  <form method="post" action="/account/login" class="login-form">
+    <label for="account_email">Email Address:</label>
+    <input type="email" id="account_email" name="account_email" required>
+
+    <label for="account_password">Password:</label>
+    <div class="password-wrapper">
+      <input type="password" id="account_password" name="account_password" required
+        pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{12,}$">
+    </div>
+
+    <!-- Password note -->
+    <p class="password-note">
+      Password must be minimum of 12 characters and include 1 capital letter, 1 number and 1 special character
+    </p>
+
+    <button type="button" class="toggle-password" onclick="togglePassword()">Show Password</button>
+
+    <div class="form-actions">
+      <button type="submit">Login</button>
+    </div>
+  </form>
+
+  <!-- Register link -->
+  <p class="register-link">
+    No Account? <a href="/account/register">Sign up</a>
+  </p>
+</div>
+
+<!-- Script for show/hide password -->
+<script>
+  function togglePassword() {
+    const pwd = document.getElementById("account_password");
+    const btn = document.querySelector(".toggle-password");
+    if (pwd.type === "password") {
+      pwd.type = "text";
+      btn.textContent = "Hide Password";
+    } else {
+      pwd.type = "password";
+      btn.textContent = "Show Password";
+    }
+  }
+</script>
