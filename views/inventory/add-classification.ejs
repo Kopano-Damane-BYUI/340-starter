@@ -1,0 +1,21 @@
+
+  <h1><%= title %></h1>
+
+  <% if (errors && errors.length > 0) { %>
+    <ul class="notice">
+      <% errors.forEach(function(msg){ %>
+        <li><%= msg %></li>
+      <% }) %>
+    </ul>
+  <% } %>
+
+<div class="classification-card">
+  <form method="post" action="/inv/add-classification" class="classification-form">
+    <label for="classification_name">Classification name (no spaces or special characters):</label>
+    <input type="text" id="classification_name" name="classification_name" required pattern="^[A-Za-z0-9]+$"
+      value="<%= locals.classification_name || '' %>">
+    <div class="form-actions">
+      <button type="submit">Add Classification</button>
+    </div>
+  </form>
+</div>
