@@ -1,0 +1,35 @@
+<h1><%= title %></h1>
+
+<% if (errors && errors.length > 0) { %>
+  <ul class="notice">
+    <% errors.forEach(function(msg) { %>
+      <li><%= msg %></li>
+    <% }) %>
+  </ul>
+<% } %>
+
+<div class="inventory-card">
+  <p><strong>Confirm Deletion — this action is permanent and cannot be undone.</strong></p>
+
+  <form action="/inv/delete" method="post" class="add-inventory-form">
+    <!-- hidden primary key -->
+    <input type="hidden" name="inv_id" value="<%= inv_id %>">
+
+    <label for="inv_make">Make:</label>
+    <input type="text" id="inv_make" readonly value="<%= inv_make %>">
+
+    <label for="inv_model">Model:</label>
+    <input type="text" id="inv_model" readonly value="<%= inv_model %>">
+
+    <label for="inv_year">Year:</label>
+    <input type="text" id="inv_year" readonly value="<%= inv_year %>">
+
+    <label for="inv_price">Price:</label>
+    <input type="text" id="inv_price" readonly value="<%= inv_price %>">
+
+    <div class="form-actions" style="display:flex; gap:1rem; align-items:center;">
+      <button type="submit">Delete</button>
+      <a href="/inv/" class="cancel-btn" style="padding:.5rem 1rem; border:1px solid #ccc; border-radius:4px; text-decoration:none; display:inline-block;">Cancel</a>
+    </div>
+  </form>
+</div>

@@ -1,7 +1,6 @@
 /* ***********************
  * Inventory Routes
  *************************/
-
 const express = require("express")
 const router = new express.Router()
 const invController = require("../controllers/invController")
@@ -11,7 +10,7 @@ const invValidate = require("../utilities/inv-validation")
 /* ***********************
  * Management view (task 1)
  *************************/
-router.get("/", utilities.handleErrors(invController.buildManagement));
+router.get("/", utilities.handleErrors(invController.buildManagement))
 
 /* ***********************
  * Add classification routes (task 2)
@@ -22,7 +21,7 @@ router.post(
   invValidate.classificationRules(),
   invValidate.checkClassData,
   utilities.handleErrors(invController.addClassification)
-);
+)
 
 /* ***********************
  * Add inventory routes (task 3)
@@ -33,31 +32,31 @@ router.post(
   invValidate.inventoryRules(),
   invValidate.checkInvData,
   utilities.handleErrors(invController.addInventory)
-);
+)
 
 /* ***********************
  * Route to build inventory by classification view
  *************************/
-router.get("/type/:classificationId", invController.buildByClassificationId);
+router.get("/type/:classificationId", invController.buildByClassificationId)
 
 /* ***********************
  * Route to build a specific vehicle detail view
  *************************/
-router.get("/detail/:invId", invController.buildByInventoryId);
+router.get("/detail/:invId", invController.buildByInventoryId)
 
 /* ***********************
  * Route to intentionally throw a 500 error
  *************************/
 router.get("/error500", (req, res, next) => {
-  const err = new Error("Intentional 500 Error");
-  err.status = 500;
-  next(err); // Pass to error handler middleware
-});
+  const err = new Error("Intentional 500 Error")
+  err.status = 500
+  next(err)
+})
 
 /* ***********************
  * Return Inventory by Classification ID as JSON (AJAX)
  *************************/
-router.get("/getInventory/:classification_id", utilities.handleErrors(invController.getInventoryJSON));
+router.get("/getInventory/:classification_id", utilities.handleErrors(invController.getInventoryJSON))
 
 /* ***********************
  * Build edit inventory view (Step 1 of updating inventory)
@@ -65,16 +64,32 @@ router.get("/getInventory/:classification_id", utilities.handleErrors(invControl
 router.get(
   "/edit/:inv_id",
   utilities.handleErrors(invController.editInventoryView)
-);
+)
 
 /* ***********************
  * Update inventory (Step 2)
  *************************/
 router.post(
   "/update",
-  invValidate.inventoryRules(),   // validation rules
-  invValidate.checkInvData,       // check for errors
-  utilities.handleErrors(invController.updateInventory) // controller
-);
+  invValidate.inventoryRules(),
+  invValidate.checkInvData,
+  utilities.handleErrors(invController.updateInventory)
+)
 
-module.exports = router;
+/* ***********************
+ * Build delete confirmation view
+ *************************/
+router.get(
+  "/delete/:inv_id",
+  utilities.handleErrors(invController.buildDeleteView)
+)
+
+/* ***********************
+ * Delete inventory item (final delete step)
+ *************************/
+router.post(
+  "/delete",
+  utilities.handleErrors(invController.deleteInventoryItem)
+)
+
+module.exports = router
