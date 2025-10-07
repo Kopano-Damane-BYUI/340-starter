@@ -4,7 +4,9 @@
 
 const utilities = require("../utilities");
 const accountModel = require("../models/account-model");
-const bcrypt = require("bcryptjs"); // <-- bcryptjs required
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 /* ****************************************
 *  Deliver login view
@@ -14,8 +16,8 @@ async function buildLogin(req, res, next) {
   res.render("account/login", {
     title: "Login",
     nav,
-    messages: req.flash("success") || [], // success messages
-    errors: req.flash("error") || [],     // always define errors
+    messages: req.flash("success") || [],
+    errors: req.flash("error") || [],
   });
 }
 
@@ -27,7 +29,20 @@ async function buildRegister(req, res, next) {
   res.render("account/register", {
     title: "Register",
     nav,
-    errors: null, // no errors initially
+    errors: null,
+  });
+}
+
+/* ****************************************
+* Deliver account management view
+**************************************** */
+async function buildAccount(req, res) {
+  let nav = await utilities.getNav();
+  res.render("account/account", {
+    title: "Account Management",
+    nav,
+    messages: req.flash("success") || [],
+    errors: req.flash("error") || [],
   });
 }
 
@@ -36,34 +51,27 @@ async function buildRegister(req, res, next) {
 * **************************************** */
 async function registerAccount(req, res) {
   let nav = await utilities.getNav();
-
   const { account_firstname, account_lastname, account_email, account_password } = req.body;
 
   // Hash the password before storing
   let hashedPassword;
   try {
-    // hashSync with saltRounds = 10
     hashedPassword = await bcrypt.hashSync(account_password, 10);
   } catch (error) {
     req.flash("notice", 'Sorry, there was an error processing the registration.');
-    res.status(500).render("account/register", {
-      title: "Registration",
-      nav,
-      errors: null,
-    });
-    return; // exit the function if hashing fails
+    res.status(500).render("account/register", { title: "Registration", nav, errors: null });
+    return;
   }
 
   const regResult = await accountModel.registerAccount(
     account_firstname,
     account_lastname,
     account_email,
-    hashedPassword // <-- use hashed password here
+    hashedPassword
   );
 
   if (regResult) {
     req.flash("success", `Congratulations, you're registered ${account_firstname}. Please log in.`);
-    // redirect instead of render to show flash message
     res.redirect("/account/login");
   } else {
     req.flash("error", "Sorry, the registration failed.");
@@ -75,8 +83,50 @@ async function registerAccount(req, res) {
   }
 }
 
+/* ****************************************
+*  Process Login Request
+*  - Checks credentials
+*  - Sets JWT cookie
+**************************************** */
+async function accountLogin(req, res) {
+  let nav = await utilities.getNav();
+  const { account_email, account_password } = req.body;
+  const accountData = await accountModel.getAccountByEmail(account_email);
+
+  if (!accountData) {
+    req.flash("notice", "Please check your credentials and try again.");
+    res.status(400).render("account/login", { title: "Login", nav, errors: null, account_email });
+    return;
+  }
+
+  try {
+    if (await bcrypt.compare(account_password, accountData.account_password)) {
+      delete accountData.account_password;
+
+      // Create JWT
+      const accessToken = jwt.sign(accountData, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 3600 });
+
+      // Set JWT cookie
+      if (process.env.NODE_ENV === 'development') {
+        res.cookie("jwt", accessToken, { httpOnly: true, maxAge: 3600 * 1000 });
+      } else {
+        res.cookie("jwt", accessToken, { httpOnly: true, secure: true, maxAge: 3600 * 1000 });
+      }
+
+      return res.redirect("/account/");
+    } else {
+      req.flash("notice", "Please check your credentials and try again.");
+      res.status(400).render("account/login", { title: "Login", nav, errors: null, account_email });
+    }
+  } catch (error) {
+    throw new Error("Access Forbidden");
+  }
+}
+
 module.exports = {
   buildLogin,
   buildRegister,
   registerAccount,
+  accountLogin,
+  buildAccount,
 };

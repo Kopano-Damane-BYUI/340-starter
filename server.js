@@ -12,19 +12,18 @@ const app = express();
 const static = require("./routes/static");
 const expressLayouts = require("express-ejs-layouts");
 const baseController = require("./controllers/baseController");
-const inventoryRoute = require("./routes/inventoryRoute"); // corrected
+const inventoryRoute = require("./routes/inventoryRoute");
 const utilities = require("./utilities/");
-const session = require("express-session")
-const pool = require('./database/')
-const accountRoute = require("./routes/accountRoute")
+const session = require("express-session");
+const pool = require('./database/');
+const accountRoute = require("./routes/accountRoute");
 const bodyParser = require("body-parser");
-
-
+const cookieParser = require("cookie-parser"); // <-- Added for JWT cookies
 
 /* ***********************
  * Middleware
- * ************************/
- app.use(session({
+ ************************/
+app.use(session({
   store: new (require('connect-pg-simple')(session))({
     createTableIfMissing: true,
     pool,
@@ -46,6 +45,12 @@ app.use(function(req, res, next){
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
 
+// Cookie Parser Middleware (for JWT)
+app.use(cookieParser());
+
+// JWT Middleware to check token validity
+app.use(utilities.checkJWTToken);
+
 /* ***********************
  * View Engine and Templates
  *************************/
@@ -64,7 +69,7 @@ app.get("/", utilities.handleErrors(baseController.buildHome))
 // Inventory routes
 app.use("/inv", inventoryRoute)
 
-//Account rountes
+// Account routes
 app.use("/account", accountRoute)
 
 // File Not Found Route - must be last route in list

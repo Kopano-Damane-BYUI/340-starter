@@ -8,14 +8,17 @@ const utilities = require("../utilities/")
 const invCont = {}
 
 /* ***********************
- * Build management view (task 1)
+ * Build management view (task 1 + AJAX dropdown)
  *************************/
 invCont.buildManagement = async function (req, res, next) {
   try {
     let nav = await utilities.getNav()
+    let classificationSelect = await utilities.buildClassificationList() // dropdown for AJAX
+
     res.render("inventory/management", {
       title: "Vehicle Management",
       nav,
+      classificationSelect, // new dropdown
       errors: null,
       messages: req.flash("success") || []
     })
@@ -51,11 +54,12 @@ invCont.addClassification = async function (req, res, next) {
 
     if (regResult && regResult.rowCount > 0) {
       req.flash("success", `Classification "${classification_name}" added.`)
-      // Build new nav and render management view with success
       let nav = await utilities.getNav()
+      let classificationSelect = await utilities.buildClassificationList()
       res.render("inventory/management", {
         title: "Vehicle Management",
         nav,
+        classificationSelect,
         errors: null,
         messages: req.flash("success") || []
       })
@@ -107,7 +111,6 @@ invCont.buildAddInventory = async function (req, res, next) {
  *************************/
 invCont.addInventory = async function (req, res, next) {
   try {
-    // Collect incoming data (names match DB fields per the "data trail" approach)
     let {
       classification_id,
       inv_make,
@@ -121,7 +124,6 @@ invCont.addInventory = async function (req, res, next) {
       inv_color,
     } = req.body;
 
-    // Provide default image paths if empty (optional)
     if (!inv_image || inv_image.trim() === "") {
       inv_image = "/images/no-image-available.png";
     }
@@ -129,7 +131,6 @@ invCont.addInventory = async function (req, res, next) {
       inv_thumbnail = "/images/no-image-available-tn.png";
     }
 
-    // convert numeric strings to numbers
     inv_price = parseFloat(inv_price);
     inv_year = parseInt(inv_year, 10);
     inv_miles = parseInt(inv_miles, 10);
@@ -150,9 +151,11 @@ invCont.addInventory = async function (req, res, next) {
     if (regResult && regResult.rowCount > 0) {
       req.flash("success", `Vehicle ${inv_make} ${inv_model} added.`)
       let nav = await utilities.getNav()
+      let classificationSelect = await utilities.buildClassificationList()
       res.render("inventory/management", {
         title: "Vehicle Management",
         nav,
+        classificationSelect,
         errors: null,
         messages: req.flash("success") || []
       })
@@ -183,8 +186,24 @@ invCont.addInventory = async function (req, res, next) {
 }
 
 /* ***********************
- * Existing functions that you already had (classification and detail)
- * Keep these so the rest of your app works
+ * AJAX: Return inventory by classification as JSON
+ *************************/
+invCont.getInventoryJSON = async function (req, res, next) {
+  const classification_id = parseInt(req.params.classification_id)
+  try {
+    const invData = await invModel.getInventoryByClassificationId(classification_id)
+    if (invData[0].inv_id) {
+      return res.json(invData)
+    } else {
+      return res.json({ message: "No data found" })
+    }
+  } catch (error) {
+    next(error)
+  }
+}
+
+/* ***********************
+ * Build by classification view (existing)
  *************************/
 invCont.buildByClassificationId = async function (req, res, next) {
   const classification_id = req.params.classificationId
@@ -199,26 +218,139 @@ invCont.buildByClassificationId = async function (req, res, next) {
   })
 }
 
+/* ***********************
+ * Build vehicle detail view (existing)
+ *************************/
 invCont.buildByInventoryId = async function (req, res, next) {
   try {
-    const invId = req.params.invId; // get invId from URL
-    const data = await invModel.getInventoryById(invId); // fetch vehicle
-
+    const invId = req.params.invId
+    const data = await invModel.getInventoryById(invId)
     if (!data) {
-      return next({ status: 404, message: 'Vehicle not found.' });
+      return next({ status: 404, message: 'Vehicle not found.' })
     }
 
-    const vehicle = data;
-    const detailHTML = await utilities.buildVehicleDetailHTML(vehicle); // build HTML
-    const nav = await utilities.getNav(); // get navigation
+    const vehicle = data
+    const detailHTML = await utilities.buildVehicleDetailHTML(vehicle)
+    const nav = await utilities.getNav()
 
     res.render("./inventory/detail", {
       title: `${vehicle.inv_make} ${vehicle.inv_model}`,
       nav,
       detailHTML,
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+/* ***************************
+ *  Build edit inventory view
+ * ************************** */
+invCont.editInventoryView = async function (req, res, next) {
+  try {
+    const inv_id = parseInt(req.params.inv_id); // collect inventory ID
+    let nav = await utilities.getNav();        // build navigation
+
+    // Get the inventory item data from the model
+    const itemData = await invModel.getInventoryById(inv_id);
+
+    // Build classification select list, pre-select current classification
+    const classificationSelect = await utilities.buildClassificationList(itemData.classification_id);
+
+    // Make & model for the title
+    const itemName = `${itemData.inv_make} ${itemData.inv_model}`;
+
+    // Render the edit-inventory view
+    res.render("./inventory/edit-inventory", {
+      title: "Edit " + itemName,
+      nav,
+      classificationSelect,
+      errors: null,
+      inv_id: itemData.inv_id,
+      inv_make: itemData.inv_make,
+      inv_model: itemData.inv_model,
+      inv_year: itemData.inv_year,
+      inv_description: itemData.inv_description,
+      inv_image: itemData.inv_image,
+      inv_thumbnail: itemData.inv_thumbnail,
+      inv_price: itemData.inv_price,
+      inv_miles: itemData.inv_miles,
+      inv_color: itemData.inv_color,
+      classification_id: itemData.classification_id
     });
   } catch (error) {
-    next(error); // pass errors to middleware
+    next(error);
+  }
+};
+
+/* ***************************
+ *  Update Inventory Data
+ * ************************** */
+invCont.updateInventory = async function (req, res, next) {
+  try {
+    let nav = await utilities.getNav();
+    const {
+      inv_id,
+      inv_make,
+      inv_model,
+      inv_description,
+      inv_image,
+      inv_thumbnail,
+      inv_price,
+      inv_year,
+      inv_miles,
+      inv_color,
+      classification_id,
+    } = req.body;
+
+    // Default images if empty
+    const imagePath = inv_image && inv_image.trim() !== "" ? inv_image : "/images/no-image-available.png";
+    const thumbnailPath = inv_thumbnail && inv_thumbnail.trim() !== "" ? inv_thumbnail : "/images/no-image-available-tn.png";
+
+    // Call model to update inventory
+    const updateResult = await invModel.updateInventory(
+      inv_id,
+      inv_make,
+      inv_model,
+      inv_description,
+      imagePath,
+      thumbnailPath,
+      parseFloat(inv_price),
+      parseInt(inv_year, 10),
+      parseInt(inv_miles, 10),
+      inv_color,
+      classification_id
+    );
+
+    if (updateResult) {
+      const itemName = `${updateResult.inv_make} ${updateResult.inv_model}`;
+      req.flash("success", `The ${itemName} was successfully updated.`);
+      res.redirect("/inv/");
+    } else {
+      // Build classification list again
+      const classificationSelect = await utilities.buildClassificationList(classification_id);
+      const itemName = `${inv_make} ${inv_model}`;
+      req.flash("error", "Sorry, the update failed.");
+      res.status(501).render("inventory/edit-inventory", {
+        title: "Edit " + itemName,
+        nav,
+        classificationSelect,
+        errors: req.flash("error") || [],
+        inv_id,
+        inv_make,
+        inv_model,
+        inv_year,
+        inv_description,
+        inv_image,
+        inv_thumbnail,
+        inv_price,
+        inv_miles,
+        inv_color,
+        classification_id
+      });
+    }
+  } catch (error) {
+    next(error);
   }
 };
 

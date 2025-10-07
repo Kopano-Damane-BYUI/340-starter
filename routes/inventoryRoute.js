@@ -54,4 +54,27 @@ router.get("/error500", (req, res, next) => {
   next(err); // Pass to error handler middleware
 });
 
+/* ***********************
+ * Return Inventory by Classification ID as JSON (AJAX)
+ *************************/
+router.get("/getInventory/:classification_id", utilities.handleErrors(invController.getInventoryJSON));
+
+/* ***********************
+ * Build edit inventory view (Step 1 of updating inventory)
+ *************************/
+router.get(
+  "/edit/:inv_id",
+  utilities.handleErrors(invController.editInventoryView)
+);
+
+/* ***********************
+ * Update inventory (Step 2)
+ *************************/
+router.post(
+  "/update",
+  invValidate.inventoryRules(),   // validation rules
+  invValidate.checkInvData,       // check for errors
+  utilities.handleErrors(invController.updateInventory) // controller
+);
+
 module.exports = router;

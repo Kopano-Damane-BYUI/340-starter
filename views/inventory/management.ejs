@@ -1,6 +1,6 @@
 <h1><%= title %></h1>
 
-<!-- messages (success) -->
+<!-- success messages -->
 <% if (messages && messages.length > 0) { %>
   <div class="flash-message success">
     <% messages.forEach(function(msg){ %>
@@ -9,7 +9,7 @@
   </div>
 <% } %>
 
-<!-- errors -->
+<!-- error messages -->
 <% if (errors && errors.length > 0) { %>
   <div class="flash-message error">
     <ul class="notice">
@@ -24,3 +24,22 @@
   <p><a href="/inv/add-classification">Add Classification</a></p>
   <p><a href="/inv/add-inventory">Add Vehicle</a></p>
 </div>
+
+<!-- New Section: Manage Inventory with AJAX -->
+<section>
+  <h2>Manage Inventory</h2>
+
+  <noscript>
+    <p><strong>JavaScript must be enabled to use this page.</strong></p>
+  </noscript>
+
+  <form>
+    <label for="classificationSelect">Select Classification:</label>
+    <!-- Inject id into the dropdown safely -->
+    <%- classificationSelect.replace('<select', '<select id="classificationSelect"') %>
+  </form>
+
+  <table id="inventoryDisplay" class="inventory-table"></table>
+</section>
+
+<script src="/js/inventory.js"></script>
