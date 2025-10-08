@@ -42,13 +42,12 @@ body {
 }
 
 #tools {
-  font-size: 3.5vw;
-  font-variant: small-caps;
   display: flex;
-  width: auto;
-  justify-content: space-evenly;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: flex-start;
+  font-size: 1.2rem;
   flex-wrap: nowrap;
-  /* prevents wrapping */
 }
 
 header > img {

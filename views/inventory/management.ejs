@@ -36,7 +36,7 @@
   <form>
     <label for="classificationSelect">Select Classification:</label>
     <!-- Inject id into the dropdown safely -->
-    <%- classificationSelect.replace('<select', '<select id="classificationSelect"') %>
+    <%- classificationSelect.replace('id="classificationList"', ' id="classificationSelect"') %>
   </form>
 
   <table id="inventoryDisplay" class="inventory-table"></table>

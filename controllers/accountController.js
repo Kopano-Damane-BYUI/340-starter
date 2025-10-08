@@ -13,11 +13,20 @@ require("dotenv").config();
 * *************************************** */
 async function buildLogin(req, res, next) {
   let nav = await utilities.getNav();
+
+  // Make sure messages are always arrays
+  let successMessages = req.flash("success");
+  if (!Array.isArray(successMessages)) successMessages = [successMessages].flat().filter(Boolean);
+
+  let errorMessages = req.flash("error");
+  if (!Array.isArray(errorMessages)) errorMessages = [errorMessages].flat().filter(Boolean);
+
   res.render("account/login", {
     title: "Login",
     nav,
-    messages: req.flash("success") || [],
-    errors: req.flash("error") || [],
+    messages: successMessages,
+    errors: errorMessages,
+    account_email: ''
   });
 }
 
@@ -123,10 +132,150 @@ async function accountLogin(req, res) {
   }
 }
 
+/* ****************************************
+ * Deliver account update view (Task 4 & 5)
+ **************************************** */
+async function buildUpdate(req, res) {
+  try {
+    const account_id = parseInt(req.params.account_id);
+    let nav = await utilities.getNav();
+    const account = await accountModel.getAccountById(account_id);
+
+    if (!account) {
+      req.flash("error", "Account not found.");
+      return res.redirect("/account/");
+    }
+
+    res.render("account/update", {
+      title: "Update Account",
+      nav,
+      account,
+      messages: req.flash("success") || [],
+      errors: req.flash("error") || []
+    });
+  } catch (error) {
+    throw error;
+  }
+}
+
+/* ****************************************
+ * Process account info update (Task 5)
+ **************************************** */
+async function updateAccountInfo(req, res) {
+  try {
+    const { account_id, account_firstname, account_lastname, account_email } = req.body;
+    const accountId = parseInt(account_id);
+
+    const updateResult = await accountModel.updateAccountInfo(
+      accountId,
+      account_firstname,
+      account_lastname,
+      account_email
+    );
+
+    if (updateResult) {
+      // Get updated account (including account_type)
+      const updated = await accountModel.getAccountById(accountId);
+      if (updated) {
+        // build new token payload (do not include password)
+        const payload = {
+          account_id: updated.account_id,
+          account_firstname: updated.account_firstname,
+          account_lastname: updated.account_lastname,
+          account_email: updated.account_email,
+          account_type: updated.account_type
+        };
+        const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 3600 });
+
+        if (process.env.NODE_ENV === 'development') {
+          res.cookie("jwt", accessToken, { httpOnly: true, maxAge: 3600 * 1000 });
+        } else {
+          res.cookie("jwt", accessToken, { httpOnly: true, secure: true, maxAge: 3600 * 1000 });
+        }
+
+        req.flash("success", "Account information updated.");
+        return res.redirect("/account/");
+      } else {
+        req.flash("error", "Account updated but could not load updated data.");
+        return res.redirect("/account/");
+      }
+    } else {
+      req.flash("error", "Sorry, the update failed.");
+      // reload update view with sticky data
+      let nav = await utilities.getNav();
+      const account = {
+        account_id: accountId,
+        account_firstname,
+        account_lastname,
+        account_email
+      };
+      res.status(500).render("account/update", {
+        title: "Update Account",
+        nav,
+        account,
+        messages: [],
+        errors: req.flash("error") || []
+      });
+    }
+  } catch (error) {
+    throw error;
+  }
+}
+
+/* ****************************************
+ * Process password update (Task 5)
+ **************************************** */
+async function updatePassword(req, res) {
+  try {
+    const { account_id, account_password } = req.body;
+    const accountId = parseInt(account_id);
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hashSync(account_password, 10);
+
+    const result = await accountModel.updateAccountPassword(accountId, hashedPassword);
+
+    if (result > 0) {
+      req.flash("success", "Password updated successfully.");
+      return res.redirect("/account/");
+    } else {
+      req.flash("error", "Password update failed.");
+      let nav = await utilities.getNav();
+      const account = await accountModel.getAccountById(accountId);
+      res.status(500).render("account/update", {
+        title: "Update Account",
+        nav,
+        account,
+        messages: [],
+        errors: req.flash("error") || []
+      });
+    }
+  } catch (error) {
+    throw error;
+  }
+}
+
+/* ****************************************
+ * Logout - delete JWT cookie and redirect home (Task 6)
+ **************************************** */
+async function logoutAccount(req, res) {
+  try {
+    res.clearCookie("jwt");
+    req.flash("success", "You have been logged out.");
+    return res.redirect("/");
+  } catch (error) {
+    throw error;
+  }
+}
+
 module.exports = {
   buildLogin,
   buildRegister,
   registerAccount,
   accountLogin,
   buildAccount,
+  buildUpdate,
+  updateAccountInfo,
+  updatePassword,
+  logoutAccount
 };

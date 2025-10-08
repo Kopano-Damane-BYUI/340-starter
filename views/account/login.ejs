@@ -6,15 +6,15 @@
 <h1><%= title %></h1>
 
 <!-- Flash message area -->
-<% if (messages && messages.length > 0) { %>
+<% if (messages && Array.isArray(messages) && messages.length> 0) { %>
   <div class="flash-message success">
     <% messages.forEach(function(msg) { %>
-      <p><%= msg %></p>
-    <% }); %>
+      <p>
+        <%= msg %>
+      </p>
+      <% }); %>
   </div>
-<% } %>
-
-
+  <% } %>
 
 <!-- Logn card -->
 <div class="login-card">

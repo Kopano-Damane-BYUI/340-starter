@@ -112,4 +112,99 @@ validate.checkLoginData = async (req, res, next) => {
   next();
 };
 
+/* **********************************
+ * Update Account Info Validation Rules
+ * ********************************* */
+validate.updateInfoRules = () => {
+  return [
+    // First name required
+    body("account_firstname")
+      .trim()
+      .escape()
+      .notEmpty()
+      .withMessage("Please provide a first name."),
+
+    // Last name required
+    body("account_lastname")
+      .trim()
+      .escape()
+      .notEmpty()
+      .withMessage("Please provide a last name."),
+
+    // Email required and unique (if changed)
+    body("account_email")
+      .trim()
+      .isEmail()
+      .normalizeEmail()
+      .withMessage("A valid email is required.")
+      .custom(async (account_email, { req }) => {
+        const existing = await accountModel.getAccountByEmail(account_email);
+        if (existing && existing.account_id !== parseInt(req.body.account_id)) {
+          throw new Error("Email exists. Please use a different email.");
+        }
+      }),
+  ];
+};
+
+/* **********************************
+ * Update Password Validation Rules
+ * ********************************* */
+validate.updatePasswordRules = () => {
+  return [
+    body("account_password")
+      .trim()
+      .notEmpty()
+      .withMessage("Password does not meet requirements.")
+      .isStrongPassword({
+        minLength: 12,
+        minLowercase: 1,
+        minUppercase: 1,
+        minNumbers: 1,
+        minSymbols: 1,
+      })
+      .withMessage("Password does not meet requirements."),
+    body("account_id")
+      .trim()
+      .notEmpty()
+      .withMessage("Account id is required.")
+  ];
+};
+
+/* ******************************
+ * Check update data and return errors or continue
+ * Used for both info update and password update.
+ * Renders account/update if validation fails with sticky values.
+ * ***************************** */
+validate.checkUpdateData = async (req, res, next) => {
+  let errors = validationResult(req);
+  const accountId = req.body.account_id || req.params.account_id;
+  if (!errors.isEmpty()) {
+    const nav = await utilities.getNav();
+    const errorMessages = errors.array().map(e => e.msg);
+
+    // Try to get account from DB to fill missing fields, then overwrite with incoming form values (sticky)
+    let accountFromDb = null;
+    if (accountId) {
+      accountFromDb = await accountModel.getAccountById(parseInt(accountId));
+    }
+
+    const account = {
+      account_id: accountFromDb ? accountFromDb.account_id : accountId,
+      account_firstname: req.body.account_firstname || (accountFromDb ? accountFromDb.account_firstname : ""),
+      account_lastname: req.body.account_lastname || (accountFromDb ? accountFromDb.account_lastname : ""),
+      account_email: req.body.account_email || (accountFromDb ? accountFromDb.account_email : "")
+    };
+
+    res.render("account/update", {
+      title: "Update Account",
+      nav,
+      account,
+      messages: req.flash("success") || [],
+      errors: errorMessages
+    });
+    return;
+  }
+  next();
+};
+
 module.exports = validate;

@@ -1,6 +1,6 @@
 /* ***********************
- * Utilities
- *************************/
+* Utilities
+*************************/
 
 const invModel = require("../models/inventory-model")
 const Util = {}
@@ -114,13 +114,15 @@ function buildVehicleDetailHTML(vehicle) {
 * Middleware to check JWT token
 **************************************** */
 Util.checkJWTToken = (req, res, next) => {
-  if (req.cookies.jwt) {
+  if (req.cookies && req.cookies.jwt) {
     jwt.verify(req.cookies.jwt, process.env.ACCESS_TOKEN_SECRET, function(err, accountData) {
       if (err) {
-        req.flash("Please log in");
+        // token invalid -> clear cookie and redirect to login
+        req.flash("notice", "Please log in.");
         res.clearCookie("jwt");
         return res.redirect("/account/login");
       }
+      // attach account info to locals for views
       res.locals.accountData = accountData;
       res.locals.loggedin = 1;
       next();
@@ -140,6 +142,27 @@ Util.checkLogin = (req, res, next) => {
     req.flash("notice", "Please log in.");
     return res.redirect("/account/login"); // user not authenticated, redirect to login
   }
+};
+
+/* ****************************************
+ *  Check Account Type (Employee or Admin)
+ *  Use this on inventory routes that add/edit/delete only.
+ * ************************************ */
+Util.checkAccountType = (req, res, next) => {
+  // if not logged in -> redirect to login
+  if (!res.locals.loggedin || !res.locals.accountData) {
+    req.flash("notice", "Please log in.");
+    return res.redirect("/account/login");
+  }
+
+  const acctType = res.locals.accountData.account_type;
+  if (acctType === "Employee" || acctType === "Admin") {
+    return next();
+  }
+
+  // unauthorized
+  req.flash("notice", "You do not have permission to access that page.");
+  return res.redirect("/account/login");
 };
 
 Util.buildVehicleDetailHTML = buildVehicleDetailHTML
