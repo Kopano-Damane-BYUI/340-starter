@@ -101,12 +101,12 @@ app.use(async (err, req, res, next) => {
  * Local Server Information
  * Values from .env (environment) file
  *************************/
-const port = process.env.PORT || 5500;   // 5500 for local dev
-const host = process.env.HOST || '0.0.0.0'; // 0.0.0.0 to work on Render
+const port = process.env.PORT;
+const host = process.env.HOST;
 
 /* ***********************
  * Log statement to confirm server operation
  *************************/
-app.listen(port, host, () => {
-  console.log(`App listening on ${host}:${port}`);
+app.listen(port, () => {
+  console.log(`app listening on ${host}:${port}`);
 });
