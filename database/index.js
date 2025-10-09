@@ -1,37 +1,38 @@
+/* ******************************************
+ * Database Connection
+ * This file handles connecting to PostgreSQL
+ * Works both locally and on Render
+ ******************************************/
+
 const { Pool } = require("pg")
 require("dotenv").config()
-/* ***************
- * Connection Pool
- * SSL Object needed for local testing of app
- * But will cause problems in production environment
- * If - else will make determination which to use
- * *************** */
-let pool
-if (process.env.NODE_ENV == "development") {
-  pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
-      rejectUnauthorized: false,
-    },
+
+/* Create connection pool */
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false, // Required for Render-hosted PostgreSQL
+  },
 })
 
-// Added for troubleshooting queries
-// during development
+/* Log confirmation when connected */
+pool.connect()
+  .then(client => {
+    console.log("Connected to PostgreSQL successfully 🎉")
+    client.release()
+  })
+  .catch(err => console.error("Database connection failed ❌", err.message))
+
+/* Export query helper */
 module.exports = {
   async query(text, params) {
     try {
       const res = await pool.query(text, params)
-      console.log("executed query", { text })
       return res
     } catch (error) {
-      console.error("error in query", { text })
+      console.error("Database query error:", error.message)
       throw error
     }
   },
-}
-} else {
-  pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-  })
-  module.exports = pool
+  pool,
 }
