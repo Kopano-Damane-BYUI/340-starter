@@ -81,36 +81,21 @@ app.use(async (req, res, next) => {
 * Express Error Handler
 * Place after all other middleware
 *************************/
-  // app.use(async (err, req, res, next) => {
-  //   let nav = await utilities.getNav()
-  //   let message
-  //   if(err.status == 404){ 
-  //     message = err.message
-  //   } else {
-  //     message = 'Oh no! There was a crash. Maybe try a different route?'
-  //   }
-  //   console.error(`Error at: "${req.originalUrl}": ${err.message}`)
-  //   res.render("errors/error", {
-  //     title: err.status || 'Server Error',
-  //     message,
-  //     nav
-  //   })
-  // })
-  
-  app.use(async (err, req, res, next) => {
-  const nav = await utilities.getNav()
-  console.error("🔥 SERVER ERROR DETAILS 🔥")
-  console.error("URL:", req.originalUrl)
-  console.error("Message:", err.message)
-  console.error("Stack:", err.stack)
-
-  res.status(err.status || 500).render("errors/error", {
-    title: err.status || "Server Error",
-    message: err.message || "Unexpected crash",
+app.use(async (err, req, res, next) => {
+  let nav = await utilities.getNav()
+  let message
+  if(err.status == 404){ 
+    message = err.message
+  } else {
+    message = 'Oh no! There was a crash. Maybe try a different route?'
+  }
+  console.error(`Error at: "${req.originalUrl}": ${err.message}`)
+  res.render("errors/error", {
+    title: err.status || 'Server Error',
+    message,
     nav
   })
 })
-
 
 /* ***********************
  * Local Server Information
