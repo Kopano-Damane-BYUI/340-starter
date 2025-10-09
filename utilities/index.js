@@ -11,7 +11,7 @@ require("dotenv").config();
  * Build the classification view HTML
  *************************/
 Util.buildClassificationGrid = async function(data){
-  let grid
+  let grid = ''; // initialize safely
   if(data.length > 0){
     grid = '<ul id="inv-display">'
     data.forEach(vehicle => { 
@@ -35,7 +35,7 @@ Util.buildClassificationGrid = async function(data){
     })
     grid += '</ul>'
   } else { 
-    grid += '<p class="notice">Sorry, no matching vehicles could be found.</p>'
+    grid = '<p class="notice">Sorry, no matching vehicles could be found.</p>'
   }
   return grid
 }
@@ -64,8 +64,7 @@ Util.getNav = async function (req, res, next) {
 }
 
 /* ***********************
- * Build classification select list (used in add-inventory view)
- * classification_id is optional - if passed it pre-selects matching option
+ * Build classification select list
  *************************/
 Util.buildClassificationList = async function (classification_id = null) {
   let data = await invModel.getClassifications()
@@ -117,12 +116,10 @@ Util.checkJWTToken = (req, res, next) => {
   if (req.cookies && req.cookies.jwt) {
     jwt.verify(req.cookies.jwt, process.env.ACCESS_TOKEN_SECRET, function(err, accountData) {
       if (err) {
-        // token invalid -> clear cookie and redirect to login
         req.flash("notice", "Please log in.");
         res.clearCookie("jwt");
         return res.redirect("/account/login");
       }
-      // attach account info to locals for views
       res.locals.accountData = accountData;
       res.locals.loggedin = 1;
       next();
@@ -134,22 +131,20 @@ Util.checkJWTToken = (req, res, next) => {
 
 /* ****************************************
  *  Check Login
- * ************************************ */
+ **************************************** */
 Util.checkLogin = (req, res, next) => {
   if (res.locals.loggedin) {
-    next(); // user is authenticated, continue to the next middleware/controller
+    next();
   } else {
     req.flash("notice", "Please log in.");
-    return res.redirect("/account/login"); // user not authenticated, redirect to login
+    return res.redirect("/account/login");
   }
 };
 
 /* ****************************************
  *  Check Account Type (Employee or Admin)
- *  Use this on inventory routes that add/edit/delete only.
- * ************************************ */
+ **************************************** */
 Util.checkAccountType = (req, res, next) => {
-  // if not logged in -> redirect to login
   if (!res.locals.loggedin || !res.locals.accountData) {
     req.flash("notice", "Please log in.");
     return res.redirect("/account/login");
@@ -160,7 +155,6 @@ Util.checkAccountType = (req, res, next) => {
     return next();
   }
 
-  // unauthorized
   req.flash("notice", "You do not have permission to access that page.");
   return res.redirect("/account/login");
 };
